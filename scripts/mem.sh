@@ -76,19 +76,18 @@ print_mem() {
 # free = free + inactive + speculative + occupied by compressor
 # see `vm_stat` command
 get_mem_usage_osx(){
-  
   local page_size=$(sysctl -nq "vm.pagesize")
   vm_stat | awk -v page_size=$page_size -F ':' '
     BEGIN { free=0; used=0 }
-    
-    /Pages active/ || 
-    /Pages wired/ { 
+
+    /Pages active/ ||
+    /Pages wired/ ||
+    /Pages occupied by compressor/ {
       gsub(/^[ \t]+|[ \t]+$/, "", $2); used+=$2;
     }
-    /Pages free/ || 
-    /Pages inactive/ || 
-    /Pages speculative/ || 
-    /Pages occupied by compressor/ { 
+    /Pages free/ ||
+    /Pages inactive/ ||
+    /Pages speculative/ {
       gsub(/^[ \t]+|[ \t]+$/, "", $2); free+=$2;
     }
 
